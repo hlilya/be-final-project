@@ -20,7 +20,8 @@ describe("1. GET /api/categories", () => {
         expect(categories).toBeInstanceOf(Array);
         expect(categories).toHaveLength(4);
         categories.forEach((categories) => {
-          expect(categories).toEqual(
+          expect(categories).
+          toEqual(
             expect.objectContaining({
               slug: expect.any(String),
               description: expect.any(String),

@@ -2,8 +2,6 @@ const { getCategories } = require("./db/controllers/controllers.js");
 const express = require("express");
 const app = express();
 const {
-  handleCustomErrors,
-  handlePsqlErrors,
   handleServerErrors,
 } = require("errors/error_handling.js");
 
