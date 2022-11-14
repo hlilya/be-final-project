@@ -1,6 +1,11 @@
 const db = require("../connection.js");
 
 exports.fetchCategories = () => {
-    console.log("model")
-    //return Promise.reject({status: })
+    return db
+      .query(
+        `
+        SELECT * FROM categories;
+        `
+      )
+      .then((results) => results.rows);
 };
