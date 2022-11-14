@@ -1,11 +1,32 @@
 const db = require("../connection.js");
 
 exports.fetchCategories = () => {
-    return db
-      .query(
-        `
+  return db
+    .query(
+      `
         SELECT * FROM categories;
         `
-      )
-      .then((results) => results.rows);
+    )
+    .then((results) => results.rows);
+};
+
+exports.fetchReviews = () => {
+  return db
+    .query(
+      `
+      SELECT users.username AS "owner", title, reviews.review_id,
+      reviews.category, reviews.review_img_url,
+      reviews.created_at, reviews.votes, reviews.designer,
+      CAST(COALESCE(COUNT(comments.review_id), 0) AS INT) AS "comment_count"
+      FROM reviews
+      JOIN users ON users.username = reviews.owner
+      FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
+      GROUP BY users.username, reviews.review_id
+      ORDER BY reviews.created_at DESC;
+        `
+    )
+    .then((results) => {
+      //console.log(results.rows)
+      return results.rows;
+    });
 };
