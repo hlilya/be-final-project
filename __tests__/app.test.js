@@ -58,3 +58,43 @@ describe("2. GET /api/reviews", () => {
       });
   });
 });
+
+describe("7. POST /api/reviews/:review_id/comments", () => {
+  test("status: 200, returns object with posted comment ", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 7,
+          votes: 0,
+          created_at: expect.any(String),
+          author: comment.username,
+          body: comment.body,
+          review_id: 3,
+        });
+      });
+  });
+  test("status: 404, msg: resource not found - invalid review_id", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/10000/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("review_id: 10000 not found");
+      });
+  });
+  test("status: 404, invalid user", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username: hlily not found");
+      });
+  });
+});

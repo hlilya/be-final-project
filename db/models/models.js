@@ -1,4 +1,5 @@
 const db = require("../connection.js");
+const { checkExists } = require("../seeds/utils.js");
 
 exports.fetchCategories = () => {
   return db
@@ -27,5 +28,24 @@ exports.fetchReviews = () => {
     )
     .then((results) => {
       return results.rows;
+    });
+};
+
+exports.insertCommentByReviewId = (review_id, newComment) => {
+  const { username, body } = newComment;
+  return checkExists("reviews", "review_id", review_id)
+    .then(() => {
+      return checkExists("users", "username", username);
+    })
+    .then(() => {
+      return db.query(
+        `INSERT INTO comments (author, body, review_id)
+      VALUES ($1, $2, $3)
+      RETURNING*;`,
+        [username, body, review_id]
+      );
+    })
+    .then((res) => {
+      return res.rows[0];
     });
 };
