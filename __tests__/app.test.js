@@ -54,7 +54,53 @@ describe("2. GET /api/reviews", () => {
               comment_count: expect.any(Number),
             })
           );
-       });
+        });
+      });
+  });
+});
+
+describe("4. GET /api/reviews/:review_id/comments", () => {
+  test("status: 200, responds with an array of comments", () => {
+    return request(app)
+      .get("/api/reviews/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(3);
+        expect(comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 3,
+            })
+          );
+        });
+      });
+  });
+
+  test("status: 404, msg:Resource not found when invalid review_id", () => {
+    return request(app)
+      .get("/api/reviews/1000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 200, empty array when valid review_id but no comments", () => {
+    return request(app)
+      .get("/api/reviews/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
       });
   });
 });
