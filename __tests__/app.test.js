@@ -103,4 +103,14 @@ describe("4. GET /api/reviews/:review_id/comments", () => {
         expect(body.comments).toEqual([]);
       });
   });
+
+    test("status: 400, invalid review id", () => {
+      return request(app)
+        .get("/api/reviews/not-a-number/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+
 });
