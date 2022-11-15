@@ -26,7 +26,6 @@ exports.fetchReviews = () => {
         `
     )
     .then((results) => {
-      //console.log(results.rows)
       return results.rows;
     });
 };
