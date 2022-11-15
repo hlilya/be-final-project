@@ -19,11 +19,9 @@ exports.fetchReviews = () => {
         `
     )
     .then((results) => {
-      console.log(results);
       return results.rows;
     });
 };
-
 
 exports.fetchReviewsById = (review_id) => {
   return db
@@ -68,7 +66,6 @@ exports.fetchCommentsByReviewId = (review_id) => {
 
 exports.insertCommentByReviewId = (review_id, newComment) => {
   const { username, body } = newComment;
-  console.log(username, body);
   if (!username || !body) {
     return Promise.reject({
       status: 400,
@@ -91,4 +88,3 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
       return res.rows[0];
     });
 };
-
