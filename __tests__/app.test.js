@@ -59,6 +59,7 @@ describe("2. GET /api/reviews", () => {
   });
 });
 
+
 describe("3. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a review object each with correct properties", () => {
     return request(app)
@@ -81,7 +82,6 @@ describe("3. GET /api/reviews/:review_id", () => {
         );
       });
   });
-
   test("status:404, msg: no review found with that id ", () => {
     return request(app)
       .get("/api/reviews/1000")
@@ -90,13 +90,60 @@ describe("3. GET /api/reviews/:review_id", () => {
         expect(body.msg).toBe("No review found for review_id: 1000");
       });
   });
+   test("status:400, msg: bad request", () => {
+     return request(app)
+       .get("/api/reviews/not-a-review")
+       .expect(400)
+       .then(({ body }) => {
+         expect(body.msg).toBe("Bad request");
+       });
+   });
+   
+});
 
-  test("status:400, msg: bad request", () => {
+
+describe("4. GET /api/reviews/:review_id/comments", () => {
+  test("status: 200, responds with an array of comments", () => {
     return request(app)
-      .get("/api/reviews/not-a-review")
-      .expect(400)
+      .get("/api/reviews/3/comments")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(3);
+        expect(comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 3,
+            })
+          );
+        });
       });
   });
-});
+  test("status: 404, msg:Resource not found when invalid review_id", () => {
+    return request(app)
+      .get("/api/reviews/1000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 200, empty array when valid review_id but no comments", () => {
+    return request(app)
+      .get("/api/reviews/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+
+
