@@ -2,20 +2,12 @@ const db = require("../connection.js");
 const { checkExists } = require("../seeds/utils.js");
 
 exports.fetchCategories = () => {
-  return db
-    .query(
-      `
-        SELECT * FROM categories;
-        `
-    )
-    .then((results) => results.rows);
+  return db.query(`SELECT * FROM categories;`).then((results) => results.rows);
 };
-
 exports.fetchReviews = () => {
   return db
     .query(
-      `
-      SELECT users.username AS "owner", title, reviews.review_id,
+      `SELECT users.username AS "owner", title, reviews.review_id,
       reviews.category, reviews.review_img_url,
       reviews.created_at, reviews.votes, reviews.designer,
       CAST(COALESCE(COUNT(comments.review_id), 0) AS INT) AS "comment_count"
@@ -27,6 +19,7 @@ exports.fetchReviews = () => {
         `
     )
     .then((results) => {
+      console.log(results)
       return results.rows;
     });
 };
@@ -34,8 +27,7 @@ exports.fetchReviews = () => {
 exports.fetchReviewsById = (review_id) => {
   return db
     .query(
-      `
-      SELECT review_id, title, review_body, designer, review_img_url,
+      `SELECT review_id, title, review_body, designer, review_img_url,
       reviews.votes, category, reviews.owner,
       reviews.created_at
       FROM reviews
@@ -51,7 +43,7 @@ exports.fetchReviewsById = (review_id) => {
         });
       }
       return review
-     })
+   })
 
 exports.fetchCommentsByReviewId = (review_id) => {
   return checkExists("reviews", "review_id", review_id)
@@ -71,5 +63,8 @@ exports.fetchCommentsByReviewId = (review_id) => {
         return results.rows;
       });
   });
+};
+      return review;
+    });
 };
 
