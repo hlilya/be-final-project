@@ -15,11 +15,9 @@ exports.fetchReviewsById = (review_id) => {
     .query(
       `
       SELECT review_id, title, review_body, designer, review_img_url,
-      reviews.votes, categories.slug AS "category", users.username AS "owner",
+      reviews.votes, category, reviews.owner,
       reviews.created_at
       FROM reviews
-      JOIN users ON users.username = reviews.owner
-      JOIN categories ON categories.slug = reviews.category
       WHERE review_id = $1;`,
       [review_id]
     )
