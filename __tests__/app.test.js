@@ -200,3 +200,121 @@ describe("3. GET /api/reviews/:review_id", () => {
     });
   });
 });
+
+describe("4. POST /api/reviews/:review_id/comments", () => {
+  test("status: 200, returns object with posted comment ", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 7,
+          votes: 0,
+          created_at: expect.any(String),
+          author: comment.username,
+          body: comment.body,
+          review_id: 3,
+        });
+      });
+  });
+  test("status: 404, msg: resource not found - non-existent review_id", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/10000/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+  test("status: 404, non-existent user", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 400, invalid review id", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/not-a-review/comments")
+      .send(comment);
+  });
+});
+
+describe.only("5. PATCH /api/reviews/:review_id", () => {
+  test("status: 202, responds with updated review (increase)", () => {
+    const increaseVotes = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(increaseVotes)
+      .then(({ body }) => {
+        const { review } = body;
+        expect(review).toMatchObject({
+          review_id: 3,
+          title: expect.any(String),
+          category: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: 105,
+        });
+      });
+  });
+  test("status: 202, responds with updated review (decrease) ", () => {
+    const decreaseVotes = {
+      inc_votes: -100,
+    };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(decreaseVotes)
+      .then(({ body }) => {
+        const { review } = body;
+        expect(review).toMatchObject({
+          review_id: 3,
+          title: expect.any(String),
+          category: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: -95,
+        });
+      });
+  });
+
+  test("status: 404, msg: invalid review_id", () => {
+    const decreaseVotes = {
+      inc_votes: -100,
+    };
+    return request(app)
+      .patch("/api/reviews/10000")
+      .send(decreaseVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("should status: 400, no votes included on req body", () => {
+    const noVotes = { not_vote: 1 };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(noVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
