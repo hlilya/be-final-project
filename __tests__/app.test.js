@@ -59,6 +59,8 @@ describe("2. GET /api/reviews", () => {
   });
 });
 
+
+
 describe("3. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a review object each with correct properties", () => {
     return request(app)
@@ -97,6 +99,14 @@ describe("3. GET /api/reviews/:review_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+  test("status: 400, not enough info on the post request", () => {
+    const comment = { body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
 });
 
 describe("4. GET /api/reviews/:review_id/comments", () => {
@@ -140,6 +150,54 @@ describe("4. GET /api/reviews/:review_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).toEqual([]);
+      });
+  });
+});
+
+describe("5. POST /api/reviews/:review_id/comments", () => {
+  test("status: 200, returns object with posted comment ", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: 7,
+          votes: 0,
+          created_at: expect.any(String),
+          author: comment.username,
+          body: comment.body,
+          review_id: 3,
+        });
+      });
+  });
+  test("status: 404, msg: resource not found - non-existent review_id", () => {
+    const comment = { username: "dav3rid", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/10000/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+  test("status: 404, non-existent user", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 400, invalid review id", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/not-a-review/comments")
+      .send(comment)
       });
   });
 });
