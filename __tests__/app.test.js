@@ -54,7 +54,7 @@ describe("2. GET /api/reviews", () => {
               comment_count: expect.any(Number),
             })
           );
-       });
+        });
       });
   });
 });
@@ -77,24 +77,46 @@ describe("7. POST /api/reviews/:review_id/comments", () => {
         });
       });
   });
-  test("status: 404, msg: resource not found - invalid review_id", () => {
+  test("status: 404, msg: resource not found - non-existent review_id", () => {
     const comment = { username: "dav3rid", body: "could be better" };
     return request(app)
       .post("/api/reviews/10000/comments")
       .send(comment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("review_id: 10000 not found");
+        expect(body.msg).toBe("Resource not found");
       });
   });
-  test("status: 404, invalid user", () => {
+  test("status: 404, non-existent user", () => {
     const comment = { username: "hlily", body: "could be better" };
     return request(app)
       .post("/api/reviews/3/comments")
       .send(comment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("username: hlily not found");
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 400, invalid review id", () => {
+    const comment = { username: "hlily", body: "could be better" };
+    return request(app)
+      .post("/api/reviews/not-a-review/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("status: 400, not enough info on the post request", () => {
+    const comment = { body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

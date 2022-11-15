@@ -1,5 +1,5 @@
 const db = require("../connection.js");
-const { checkExists } = require("../seeds/utils.js");
+const { checkExists } = require("../utils.js");
 
 exports.fetchCategories = () => {
   return db
@@ -33,6 +33,13 @@ exports.fetchReviews = () => {
 
 exports.insertCommentByReviewId = (review_id, newComment) => {
   const { username, body } = newComment;
+  console.log(username, body);
+  if (!username || !body) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
   return checkExists("reviews", "review_id", review_id)
     .then(() => {
       return checkExists("users", "username", username);
