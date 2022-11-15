@@ -19,7 +19,7 @@ exports.fetchReviews = () => {
         `
     )
     .then((results) => {
-      console.log(results)
+      console.log(results);
       return results.rows;
     });
 };
@@ -42,12 +42,12 @@ exports.fetchReviewsById = (review_id) => {
           msg: `No review found for review_id: ${review_id}`,
         });
       }
-      return review
-   })
+      return review;
+    });
+};
 
 exports.fetchCommentsByReviewId = (review_id) => {
-  return checkExists("reviews", "review_id", review_id)
-  .then(() => {
+  return checkExists("reviews", "review_id", review_id).then(() => {
     return db
       .query(
         `
@@ -64,7 +64,3 @@ exports.fetchCommentsByReviewId = (review_id) => {
       });
   });
 };
-      return review;
-    });
-};
-

@@ -59,7 +59,6 @@ describe("2. GET /api/reviews", () => {
   });
 });
 
-
 describe("3. GET /api/reviews/:review_id", () => {
   test("status:200, responds with a review object each with correct properties", () => {
     return request(app)
@@ -90,17 +89,15 @@ describe("3. GET /api/reviews/:review_id", () => {
         expect(body.msg).toBe("No review found for review_id: 1000");
       });
   });
-   test("status:400, msg: bad request", () => {
-     return request(app)
-       .get("/api/reviews/not-a-review")
-       .expect(400)
-       .then(({ body }) => {
-         expect(body.msg).toBe("Bad request");
-       });
-   });
-   
+  test("status:400, msg: bad request", () => {
+    return request(app)
+      .get("/api/reviews/not-a-review")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
-
 
 describe("4. GET /api/reviews/:review_id/comments", () => {
   test("status: 200, responds with an array of comments", () => {
@@ -145,5 +142,4 @@ describe("4. GET /api/reviews/:review_id/comments", () => {
         expect(body.comments).toEqual([]);
       });
   });
-
-
+});
