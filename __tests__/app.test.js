@@ -59,6 +59,48 @@ describe("2. GET /api/reviews", () => {
   });
 });
 
+
+describe("3. GET /api/reviews/:review_id", () => {
+  test("status:200, responds with a review object each with correct properties", () => {
+    return request(app)
+      .get("/api/reviews/3")
+     .expect(200)
+      .then(({ body }) => {
+        const { review } = body;
+        expect(review).toEqual(
+          expect.objectContaining({
+            review_id: 3,
+            title: expect.any(String),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            review_img_url: expect.any(String),
+            votes: expect.any(Number),
+            category: expect.any(String),
+            owner: expect.any(String),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  test("status:404, msg: no review found with that id ", () => {
+    return request(app)
+      .get("/api/reviews/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No review found for review_id: 1000')
+      });
+  });
+   test("status:400, msg: bad request", () => {
+     return request(app)
+       .get("/api/reviews/not-a-review")
+       .expect(400)
+       .then(({ body }) => {
+         expect(body.msg).toBe("Bad request");
+       });
+   });
+});
+
+
 describe("4. GET /api/reviews/:review_id/comments", () => {
   test("status: 200, responds with an array of comments", () => {
     return request(app)
@@ -85,7 +127,6 @@ describe("4. GET /api/reviews/:review_id/comments", () => {
         });
       });
   });
-
   test("status: 404, msg:Resource not found when invalid review_id", () => {
     return request(app)
       .get("/api/reviews/1000/comments")
@@ -112,5 +153,4 @@ describe("4. GET /api/reviews/:review_id/comments", () => {
           expect(body.msg).toBe("Bad request");
         });
     });
-
 });
