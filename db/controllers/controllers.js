@@ -10,7 +10,6 @@ exports.getReviewsById = (req, res, next) => {
   const { review_id } = req.params;
   fetchReviewsById(review_id)
     .then((review) => {
-      console.log(review);
       res.send({ review });
     })
     .catch((err) => next(err));
