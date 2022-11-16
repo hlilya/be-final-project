@@ -88,3 +88,5 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
       return res.rows[0];
     });
 };
+
+exports.fetchUsers

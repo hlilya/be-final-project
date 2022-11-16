@@ -44,3 +44,7 @@ exports.postCommentByReviewId = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getUsers = (req, res, next) => {
+    
+}
