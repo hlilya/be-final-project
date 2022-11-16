@@ -256,6 +256,7 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
     return request(app)
       .patch("/api/reviews/3")
       .send(increaseVotes)
+      .expect(202)
       .then(({ body }) => {
         const { review } = body;
         expect(review).toMatchObject({
@@ -278,6 +279,7 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
     return request(app)
       .patch("/api/reviews/3")
       .send(decreaseVotes)
+      .expect(202)
       .then(({ body }) => {
         const { review } = body;
         expect(review).toMatchObject({
@@ -309,6 +311,41 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
 
   test("should status: 400, no votes included on req body", () => {
     const noVotes = { not_vote: 1 };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(noVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  test("should status: 202, even when some other property included on req body (ignore other property", () => {
+    const increaseVotes = {
+      inc_votes: 100, name: 'Mitch'
+    };
+    return request(app)
+      .patch("/api/reviews/3")
+      .send(increaseVotes)
+      .expect(202)
+      .then(({ body }) => {
+        const { review } = body;
+        expect(review).toMatchObject({
+          review_id: 3,
+          title: expect.any(String),
+          category: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: 105,
+        });
+      });
+  });
+
+  test("should status: 400, no inc_votes on the req body", () => {
+    const noVotes = {};
     return request(app)
       .patch("/api/reviews/3")
       .send(noVotes)
