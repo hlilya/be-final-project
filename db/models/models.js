@@ -1,13 +1,15 @@
 const db = require("../connection.js");
 const categories = require("../data/test-data/categories.js");
 const { checkExists } = require("../utils.js");
+const format = require("pg-format");
+const { query } = require("../connection.js");
 
 exports.fetchCategories = () => {
   return db.query(`SELECT * FROM categories;`).then((results) => results.rows);
 };
 
 exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
-  const validColumns = [
+  const validSorts = [
     "owner",
     "title",
     "review_id",
@@ -18,9 +20,16 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
     "designer",
     "comment_count",
   ];
-  if (!validColumns.includes(sort_by)) {
+  const validOrders = ["ASC", "DESC"];
+
+  if (!validSorts.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "invalid sort query" });
   }
+  if (!validOrders.includes(order)) {
+    return Promise.reject({ status: 400, msg: "invalid order condition" });
+  }
+
+
   let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id,
       reviews.category, reviews.review_img_url,
       reviews.created_at, reviews.votes, reviews.designer,
@@ -28,21 +37,27 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
       FROM reviews
       FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
       `;
+
+  let queryVals = []
+
   if (category != undefined) {
-    queryStr += `WHERE reviews.category = '${category}'`;
+    queryStr += ` WHERE reviews.category = $1`
+    queryVals.push(category);
   }
 
-  queryStr += ` 
+queryStr += ` 
  GROUP BY reviews.owner, reviews.title, reviews.review_id
- ORDER BY ${sort_by} ${order};`;
-  return db.query(queryStr).then((results) => {
+ ORDER BY ${sort_by} ${order};`
+
+  return db.query(queryStr, queryVals).then((results) => {
     const reviews = results.rows;
     if (reviews.length === 0) {
       return Promise.reject({
         status: 404,
         msg: "No reviews found",
       });
-    } return reviews;
+    }
+    return reviews;
   });
 };
 
