@@ -264,3 +264,6 @@ describe("6. GET /api/reviews/:review_id (comment count)", () => {
             comment_count: 0,
           })
         );
+      });
+  });
+});
