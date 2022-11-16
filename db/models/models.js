@@ -89,4 +89,6 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
     });
 };
 
-exports.fetchUsers
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((results) => results.rows);
+};

@@ -4,6 +4,7 @@ const {
   insertCommentByReviewId,
   fetchReviewsById,
   fetchCommentsByReviewId,
+  fetchUsers,
 } = require("../models/models.js");
 
 exports.getCategories = (req, res, next) => {
@@ -46,5 +47,7 @@ exports.postCommentByReviewId = (req, res, next) => {
 };
 
 exports.getUsers = (req, res, next) => {
-    
-}
+  fetchUsers()
+    .then((users) => res.status(200).send({ users }))
+    .catch((err) => next(err));
+};
