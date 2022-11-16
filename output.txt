@@ -1,0 +1,6 @@
+You are now connected to database "nc_games_test" as user "lilyha".
+ review_id |  title   |  review_body  |   designer    |                              review_img_url                               | votes | category  |    owner    | comment_count |       created_at        
+-----------+----------+---------------+---------------+---------------------------------------------------------------------------+-------+-----------+-------------+---------------+-------------------------
+         1 | Agricola | Farmyard fun! | Uwe Rosenberg | https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png |     1 | euro game | mallionaire |             0 | 2021-01-18 10:00:20.514
+(1 row)
+
