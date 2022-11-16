@@ -220,3 +220,33 @@ describe("5. GET /api/users", () => {
       });
   });
 });
+
+describe("6. GET /api/reviews (queries)", () => {
+      test("status:200, responds with indicated category (query)", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(1);
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+        reviews.forEach((reviews) => {
+          expect(reviews).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+});
+});
