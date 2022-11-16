@@ -91,3 +91,7 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
       return res.rows[0];
     });
 };
+
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((results) => results.rows);
+};

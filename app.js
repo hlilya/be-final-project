@@ -4,6 +4,7 @@ const {
   getReviews,
   postCommentByReviewId,
   getCommentsByReviewId,
+  getUsers,
 } = require("./db/controllers/controllers.js");
 const express = require("express");
 const app = express();
@@ -14,6 +15,7 @@ app.get("/api/reviews/:review_id", getReviewsById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.use(express.json());
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
+app.get("/api/users", getUsers);
 
 
 
