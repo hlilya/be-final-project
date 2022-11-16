@@ -248,7 +248,7 @@ describe("4. POST /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe.only("5. PATCH /api/reviews/:review_id", () => {
+describe("5. PATCH /api/reviews/:review_id", () => {
   test("status: 202, responds with updated review (increase)", () => {
     const increaseVotes = {
       inc_votes: 100,
@@ -296,7 +296,7 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
       });
   });
 
-  test("status: 404, msg: invalid review_id", () => {
+  test("status: 404, msg: Resource not found - when invalid review_id provided", () => {
     const decreaseVotes = {
       inc_votes: -100,
     };
@@ -322,7 +322,8 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
 
   test("should status: 202, even when some other property included on req body (ignore other property", () => {
     const increaseVotes = {
-      inc_votes: 100, name: 'Mitch'
+      inc_votes: 100,
+      name: "Mitch",
     };
     return request(app)
       .patch("/api/reviews/3")
@@ -354,4 +355,30 @@ describe.only("5. PATCH /api/reviews/:review_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
+
+  test("should status: 400, invalid review id", () => {
+    const decreaseVotes = {
+      inc_votes: -100,
+    };
+    return request(app)
+      .patch("/api/reviews/not-a-review")
+      .send(decreaseVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+    test("should status: 400, inc_votes included but invalid value", () => {
+      const nonsenseVotes = {
+        inc_votes: 'cat',
+      };
+      return request(app)
+        .patch("/api/reviews/not-a-review")
+        .send(nonsenseVotes)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
 });

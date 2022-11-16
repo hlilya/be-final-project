@@ -96,7 +96,7 @@ exports.updateVotes = (review_id, inc_votes) => {
       msg: "Bad request"
     });
   }
-  return checkExists("reviews", "review_id", review_id)
+   return checkExists("reviews", "review_id", review_id)
     .then(() => {
       return db.query(
         `UPDATE reviews
@@ -104,8 +104,8 @@ exports.updateVotes = (review_id, inc_votes) => {
       WHERE review_id = $2
       RETURNING*;`,
         [inc_votes, review_id]
-      );
-    })
+      )
+     })
     .then((result) => {
       const review = result.rows[0];
       if (!review) {
