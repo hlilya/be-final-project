@@ -92,6 +92,32 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
     });
 };
 
+exports.updateVotes = (review_id, inc_votes) => {
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request"
+    });
+  }
+   return checkExists("reviews", "review_id", review_id)
+    .then(() => {
+      return db.query(
+        `UPDATE reviews
+      SET votes = votes + $1
+      WHERE review_id = $2
+      RETURNING*;`,
+        [inc_votes, review_id]
+      )
+     })
+    .then((result) => {
+      const review = result.rows[0];
+      if (!review) {
+        Promise.reject({
+          status: 400,
+          msg: "invalid request",
+        });
+      } return review
+    }) 
 exports.fetchUsers = () => {
   return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };
