@@ -26,11 +26,14 @@ exports.fetchReviews = () => {
 exports.fetchReviewsById = (review_id) => {
   return db
     .query(
-      `SELECT review_id, title, review_body, designer, review_img_url,
-      reviews.votes, category, reviews.owner,
+      `SELECT reviews.review_id, title, review_body, designer, review_img_url,
+      reviews.votes, category, reviews.owner, 
+      CAST(COALESCE(COUNT(comments.review_id), 0) AS INT) AS "comment_count",
       reviews.created_at
       FROM reviews
-      WHERE review_id = $1;`,
+      FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
+      WHERE reviews.review_id = $1
+      GROUP BY reviews.review_id`,
       [review_id]
     )
     .then((result) => {
@@ -115,4 +118,6 @@ exports.updateVotes = (review_id, inc_votes) => {
         });
       } return review
     }) 
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };
