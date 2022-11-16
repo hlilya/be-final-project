@@ -211,13 +211,11 @@ describe("5. GET /api/users", () => {
         expect(users).toBeInstanceOf(Array);
         expect(users).toHaveLength(4);
         users.forEach((user) => {
-          expect(user).toEqual(
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            })
-          );
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
         });
       });
   });
