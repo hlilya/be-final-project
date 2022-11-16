@@ -37,6 +37,7 @@ exports.getCommentsByReviewId = (req, res, next) => {
       next(err);
     });
 };
+
 exports.postCommentByReviewId = (req, res, next) => {
   const { review_id } = req.params;
   const newComment = req.body;
@@ -57,6 +58,8 @@ exports.patchVotes = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
 exports.getUsers = (req, res, next) => {
   fetchUsers()
     .then((users) => res.status(200).send({ users }))

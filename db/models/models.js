@@ -96,10 +96,10 @@ exports.updateVotes = (review_id, inc_votes) => {
   if (!inc_votes) {
     return Promise.reject({
       status: 400,
-      msg: "Bad request"
+      msg: "Bad request",
     });
   }
-   return checkExists("reviews", "review_id", review_id)
+  return checkExists("reviews", "review_id", review_id)
     .then(() => {
       return db.query(
         `UPDATE reviews
@@ -107,8 +107,8 @@ exports.updateVotes = (review_id, inc_votes) => {
       WHERE review_id = $2
       RETURNING*;`,
         [inc_votes, review_id]
-      )
-     })
+      );
+    })
     .then((result) => {
       const review = result.rows[0];
       if (!review) {
@@ -116,8 +116,11 @@ exports.updateVotes = (review_id, inc_votes) => {
           status: 400,
           msg: "invalid request",
         });
-      } return review
-    }) 
+      }
+      return review;
+    });
+};
+
 exports.fetchUsers = () => {
   return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };

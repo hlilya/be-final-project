@@ -369,20 +369,21 @@ describe("5. PATCH /api/reviews/:review_id", () => {
       });
   });
 
-    test("should status: 400, inc_votes included but invalid value", () => {
-      const nonsenseVotes = {
-        inc_votes: 'cat',
-      };
-      return request(app)
-        .patch("/api/reviews/not-a-review")
-        .send(nonsenseVotes)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Bad request");
-        });
-    });
+  test("should status: 400, inc_votes included but invalid value", () => {
+    const nonsenseVotes = {
+      inc_votes: "cat",
+    };
+    return request(app)
+      .patch("/api/reviews/not-a-review")
+      .send(nonsenseVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
 
-describe("5. GET /api/users", () => {
+describe("6. GET /api/users", () => {
   test("status: 200, responds with an array of objects that contain username, name, avatar_url", () => {
     return request(app)
       .get("/api/users")
@@ -402,7 +403,7 @@ describe("5. GET /api/users", () => {
   });
 });
 
-describe("6. GET /api/reviews/:review_id (comment count)", () => {
+describe("7. GET /api/reviews/:review_id (comment count)", () => {
   test("status:200, responds with a review object each with correct properties - including comment count", () => {
     return request(app)
       .get("/api/reviews/3")
