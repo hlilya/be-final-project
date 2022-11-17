@@ -29,7 +29,6 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
     return Promise.reject({ status: 400, msg: "invalid order condition" });
   }
 
-
   let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id,
       reviews.category, reviews.review_img_url,
       reviews.created_at, reviews.votes, reviews.designer,
@@ -38,16 +37,16 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
       FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
       `;
 
-  let queryVals = []
+  let queryVals = [];
 
   if (category != undefined) {
-    queryStr += ` WHERE reviews.category = $1`
+    queryStr += ` WHERE reviews.category = $1`;
     queryVals.push(category);
   }
 
-queryStr += ` 
+  queryStr += ` 
  GROUP BY reviews.owner, reviews.title, reviews.review_id
- ORDER BY ${sort_by} ${order};`
+ ORDER BY ${sort_by} ${order};`;
 
   return db.query(queryStr, queryVals).then((results) => {
     const reviews = results.rows;
@@ -56,8 +55,9 @@ queryStr += `
         status: 404,
         msg: "No reviews found",
       });
-    }
-    return reviews;
+    }  
+     return reviews;
+  
   });
 };
 

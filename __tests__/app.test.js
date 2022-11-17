@@ -272,7 +272,7 @@ describe("6. GET /api/reviews (queries)", () => {
       });
   });
 
-test("status:200, category and sorts by asc)", () => {
+test("status:200, category and sorts by asc", () => {
   return request(app)
     .get("/api/reviews?category=social deduction&sort_by=title&order=ASC")
     .expect(200)
