@@ -449,3 +449,27 @@ describe("7. GET /api/reviews/:review_id (comment count)", () => {
       });
   });
 });
+
+describe("9. DELETE /api/comments/:comment_id", () => {
+  test("status: 204, no content ", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  test("status: 404, comment_id valid but non-existent", () => {
+    return request(app)
+      .delete("/api/comments/100000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 400, comment_id not valid", () => {
+    return request(app)
+      .delete("/api/comments/not-an-id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
