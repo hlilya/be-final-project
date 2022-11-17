@@ -403,7 +403,7 @@ describe("6. GET /api/users", () => {
   });
 });
 
-describe("6. GET /api/reviews (queries)", () => {
+describe("7. GET /api/reviews (queries)", () => {
   test("status:200, responds with array of reviews in the indicated category (query)", () => {
     return request(app)
       .get("/api/reviews?category=dexterity")
@@ -496,8 +496,11 @@ describe("6. GET /api/reviews (queries)", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No reviews found");
+      });
+  });
+});
 
-describe("7. GET /api/reviews/:review_id (comment count)", () => {
+describe("8. GET /api/reviews/:review_id (comment count)", () => {
   test("status:200, responds with a review object each with correct properties - including comment count", () => {
     return request(app)
       .get("/api/reviews/3")
