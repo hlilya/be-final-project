@@ -2,13 +2,15 @@
   "name": "be-nc-games",
   "version": "1.0.0",
   "description": "bc-nc-games",
-  "main": "index.js",
+  "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
     "test": "psql -f ./db/setup.sql && jest",
     "prepare": "husky install",
-    "practice": "psql -f ./__tests__/practice.sql > output.txt"
+    "practice": "psql -f ./__tests__/practice.sql > output.txt",
+    "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "repository": {
     "type": "git",
