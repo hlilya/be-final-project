@@ -55,9 +55,8 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
         status: 404,
         msg: "No reviews found",
       });
-    }  
-     return reviews;
-  
+    }
+    return reviews;
   });
 };
 

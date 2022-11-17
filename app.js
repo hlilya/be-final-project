@@ -23,10 +23,6 @@ app.patch("/api/reviews/:review_id", patchVotes);
 app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteComment);
 
-
-
-
-
 //handle custom errors
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
