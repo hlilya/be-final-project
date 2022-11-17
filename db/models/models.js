@@ -64,11 +64,14 @@ exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
 exports.fetchReviewsById = (review_id) => {
   return db
     .query(
-      `SELECT review_id, title, review_body, designer, review_img_url,
-      reviews.votes, category, reviews.owner,
+      `SELECT reviews.review_id, title, review_body, designer, review_img_url,
+      reviews.votes, category, reviews.owner, 
+      CAST(COALESCE(COUNT(comments.review_id), 0) AS INT) AS "comment_count",
       reviews.created_at
       FROM reviews
-      WHERE review_id = $1;`,
+      FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
+      WHERE reviews.review_id = $1
+      GROUP BY reviews.review_id`,
       [review_id]
     )
     .then((result) => {
@@ -124,6 +127,35 @@ exports.insertCommentByReviewId = (review_id, newComment) => {
     })
     .then((res) => {
       return res.rows[0];
+    });
+};
+
+exports.updateVotes = (review_id, inc_votes) => {
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
+  return checkExists("reviews", "review_id", review_id)
+    .then(() => {
+      return db.query(
+        `UPDATE reviews
+      SET votes = votes + $1
+      WHERE review_id = $2
+      RETURNING*;`,
+        [inc_votes, review_id]
+      );
+    })
+    .then((result) => {
+      const review = result.rows[0];
+      if (!review) {
+        Promise.reject({
+          status: 400,
+          msg: "invalid request",
+        });
+      }
+      return review;
     });
 };
 
