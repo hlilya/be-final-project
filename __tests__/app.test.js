@@ -3,6 +3,7 @@ const app = require("../app.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
+
 const endpoints_json = require("../endpoints.json");
 
 afterAll(() => {
@@ -202,7 +203,7 @@ describe("3. GET /api/reviews/:review_id", () => {
   });
 });
 
-describe.only("4. POST /api/reviews/:review_id/comments", () => {
+describe("4. POST /api/reviews/:review_id/comments", () => {
   test("status: 200, returns object with posted comment ", () => {
     const comment = { username: "dav3rid", body: "could be better" };
     return request(app)
@@ -451,15 +452,15 @@ describe("7. GET /api/reviews/:review_id (comment count)", () => {
   });
 });
 
-describe('9. GET/api', () => {
-    test('status 200, JSON describing all endpoints of the API', () => {
-        return request(app)
-        .get('/api')
-        .expect(200)
-        .then(({body}) => {
-            const {endpoints} = body
-            expect(endpoints).toBeInstanceOf(Object)
-            expect(endpoints).toEqual(endpoints_json);
-        })
-    });
-})
+describe("9. GET/api", () => {
+  test("status 200, JSON describing all endpoints of the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const { endpoints } = body;
+        expect(endpoints).toBeInstanceOf(Object);
+        expect(endpoints).toEqual(endpoints_json);
+      });
+  });
+});
