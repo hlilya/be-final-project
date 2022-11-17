@@ -272,49 +272,48 @@ describe("6. GET /api/reviews (queries)", () => {
       });
   });
 
-test("status:200, category and sorts by asc", () => {
-  return request(app)
-    .get("/api/reviews?category=social deduction&sort_by=title&order=ASC")
-    .expect(200)
-    .then(({ body }) => {
-      const { reviews } = body;
-      expect(reviews).toBeInstanceOf(Array);
-      expect(reviews).toHaveLength(11);
-      expect(reviews).toBeSortedBy("title", { ascending: true });
-      reviews.forEach((reviews) => {
-        expect(reviews).toEqual(
-          expect.objectContaining({
-            category: "social deduction",
-          })
-        );
+  test("status:200, category and sorts by asc", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toHaveLength(11);
+        expect(reviews).toBeSortedBy("title", { ascending: true });
+        reviews.forEach((reviews) => {
+          expect(reviews).toEqual(
+            expect.objectContaining({
+              category: "social deduction",
+            })
+          );
+        });
       });
-    });
-});
+  });
 
-test("status:404, category does not exist", () => {
-  return request(app)
-    .get("/api/reviews?category=fun")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("No reviews found");
-    });
-});
+  test("status:404, category does not exist", () => {
+    return request(app)
+      .get("/api/reviews?category=fun")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No reviews found");
+      });
+  });
 
-test("status:400, invalid sort query", () => {
-  return request(app)
-    .get("/api/reviews?sort_by=invalid")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("invalid sort query");
-    });
-});
+  test("status:400, invalid sort query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid sort query");
+      });
+  });
 
-test("status:404, category exist but has no reviews", () => {
-  return request(app)
-    .get("/api/reviews?category=children's games")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("No reviews found");
-    });
+  test("status:404, category exist but has no reviews", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No reviews found");
+      });
+  });
 });
-})
