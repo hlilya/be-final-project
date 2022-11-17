@@ -1,26 +1,64 @@
 const db = require("../connection.js");
+const categories = require("../data/test-data/categories.js");
 const { checkExists } = require("../utils.js");
+const format = require("pg-format");
+const { query } = require("../connection.js");
 
 exports.fetchCategories = () => {
   return db.query(`SELECT * FROM categories;`).then((results) => results.rows);
 };
-exports.fetchReviews = () => {
-  return db
-    .query(
-      `SELECT users.username AS "owner", title, reviews.review_id,
+
+exports.fetchReviews = (category, sort_by = "created_at", order = "DESC") => {
+  const validSorts = [
+    "owner",
+    "title",
+    "review_id",
+    "category",
+    "review_img_url",
+    "created_at",
+    "votes",
+    "designer",
+    "comment_count",
+  ];
+  const validOrders = ["ASC", "DESC"];
+
+  if (!validSorts.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "invalid sort query" });
+  }
+  if (!validOrders.includes(order)) {
+    return Promise.reject({ status: 400, msg: "invalid order condition" });
+  }
+
+  let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id,
       reviews.category, reviews.review_img_url,
       reviews.created_at, reviews.votes, reviews.designer,
       CAST(COALESCE(COUNT(comments.review_id), 0) AS INT) AS "comment_count"
       FROM reviews
-      JOIN users ON users.username = reviews.owner
       FULL OUTER JOIN comments ON comments.review_id = reviews.review_id
-      GROUP BY users.username, reviews.review_id
-      ORDER BY reviews.created_at DESC;
-        `
-    )
-    .then((results) => {
-      return results.rows;
-    });
+      `;
+
+  let queryVals = [];
+
+  if (category != undefined) {
+    queryStr += ` WHERE reviews.category = $1`;
+    queryVals.push(category);
+  }
+
+  queryStr += ` 
+ GROUP BY reviews.owner, reviews.title, reviews.review_id
+ ORDER BY ${sort_by} ${order};`;
+
+  return db.query(queryStr, queryVals).then((results) => {
+    const reviews = results.rows;
+    if (reviews.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "No reviews found",
+      });
+    }  
+     return reviews;
+  
+  });
 };
 
 exports.fetchReviewsById = (review_id) => {
@@ -125,3 +163,10 @@ exports.fetchUsers = () => {
   return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };
 
+exports.removeComment = (comment_id) => {
+  return checkExists("comments", "comment_id", comment_id).then(() => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*;`, [
+      comment_id,
+    ]);
+  });
+};

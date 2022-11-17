@@ -405,7 +405,104 @@ describe("6. GET /api/users", () => {
   });
 });
 
-describe("7. GET /api/reviews/:review_id (comment count)", () => {
+describe("7. GET /api/reviews (queries)", () => {
+  test("status:200, responds with array of reviews in the indicated category (query)", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(1);
+        reviews.forEach((reviews) => {
+          expect(reviews).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: "dexterity",
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+
+  test("status:200, sorts by valid column)", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(13);
+        expect(reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+
+  test("status:200, sorts by asc)", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(13);
+        expect(reviews).toBeSortedBy("title", { ascending: true });
+      });
+  });
+
+  test("status:200, category and sorts by asc", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction&sort_by=title&order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toHaveLength(11);
+        expect(reviews).toBeSortedBy("title", { ascending: true });
+        reviews.forEach((reviews) => {
+          expect(reviews).toEqual(
+            expect.objectContaining({
+              category: "social deduction",
+            })
+          );
+        });
+      });
+  });
+
+  test("status:404, category does not exist", () => {
+    return request(app)
+      .get("/api/reviews?category=fun")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No reviews found");
+      });
+  });
+
+  test("status:400, invalid sort query", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid sort query");
+      });
+  });
+
+  test("status:404, category exist but has no reviews", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No reviews found");
+      });
+  });
+});
+
+describe("8. GET /api/reviews/:review_id (comment count)", () => {
   test("status:200, responds with a review object each with correct properties - including comment count", () => {
     return request(app)
       .get("/api/reviews/3")
@@ -461,6 +558,27 @@ describe("9. GET/api", () => {
         const { endpoints } = body;
         expect(endpoints).toBeInstanceOf(Object);
         expect(endpoints).toEqual(endpoints_json);
+
+describe("9. DELETE /api/comments/:comment_id", () => {
+  test("status: 204, no content ", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  test("status: 404, comment_id valid but non-existent", () => {
+    return request(app)
+      .delete("/api/comments/100000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+
+  test("status: 400, comment_id not valid", () => {
+    return request(app)
+      .delete("/api/comments/not-an-id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });

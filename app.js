@@ -7,6 +7,7 @@ const {
   patchVotes,
   getUsers,
   getAll,
+  deleteComment,
 } = require("./db/controllers/controllers.js");
 const express = require("express");
 const app = express();
@@ -20,6 +21,10 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 app.patch("/api/reviews/:review_id", patchVotes);
 app.get("/api/users", getUsers);
+app.delete("/api/comments/:comment_id", deleteComment);
+
+
+
 
 
 //handle custom errors

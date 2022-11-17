@@ -6,6 +6,7 @@ const {
   fetchCommentsByReviewId,
   updateVotes,
   fetchUsers,
+  removeComment,
 } = require("../models/models.js");
 
 const endpoints = require("../../endpoints.json");
@@ -17,7 +18,8 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  fetchReviews()
+    const { category, sort_by, order } = req.query;
+  fetchReviews(category, sort_by, order)
     .then((reviews) => res.status(200).send({ reviews }))
     .catch((err) => next(err));
 };
@@ -70,4 +72,10 @@ exports.getUsers = (req, res, next) => {
 
 exports.getAll = (req, res, next) => {
   res.status(200).send({ endpoints });
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComment(comment_id).then(() => {
+    res.status(204).send({})
+  })
+  .catch((err) => next(err))
 };
