@@ -1,11 +1,11 @@
 # Northcoders House of Games API
 
 ## Background
-**Please note: due to NHS Digital wifi restrictions this cannon be hosted atm**
-
 This is a backend project which builds an API server using express.js for the purpose of accessing data programmatically from the nc_games database via PostgreSQL (psql). 
 
 The data includes reviews of games of different categories. The API allows users to view game review information and can also be filtered by category. The API also allows users to add and delete comments on reviews as well as vote (up/down) on these comments. 
+
+The API is hosted here: https://ncgames.cyclic.app/
 
 ## SET UP
 ### 1. Cloning 
