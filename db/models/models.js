@@ -124,3 +124,4 @@ exports.updateVotes = (review_id, inc_votes) => {
 exports.fetchUsers = () => {
   return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };
+

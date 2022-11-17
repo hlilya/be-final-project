@@ -8,6 +8,8 @@ const {
   fetchUsers,
 } = require("../models/models.js");
 
+const endpoints = require("../../endpoints.json");
+
 exports.getCategories = (req, res, next) => {
   fetchCategories()
     .then((categories) => res.status(200).send({ categories }))
@@ -64,4 +66,8 @@ exports.getUsers = (req, res, next) => {
   fetchUsers()
     .then((users) => res.status(200).send({ users }))
     .catch((err) => next(err));
+};
+
+exports.getAll = (req, res, next) => {
+    res.status(200).send({endpoints});
 };

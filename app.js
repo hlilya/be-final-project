@@ -6,10 +6,12 @@ const {
   getCommentsByReviewId,
   patchVotes,
   getUsers,
+  getAll,
 } = require("./db/controllers/controllers.js");
 const express = require("express");
 const app = express();
 
+app.get("/api", getAll);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id", getReviewsById);
@@ -18,6 +20,7 @@ app.use(express.json());
 app.post("/api/reviews/:review_id/comments", postCommentByReviewId);
 app.patch("/api/reviews/:review_id", patchVotes);
 app.get("/api/users", getUsers);
+
 
 //handle custom errors
 app.use((err, req, res, next) => {
