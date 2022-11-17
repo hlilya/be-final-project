@@ -162,3 +162,11 @@ exports.updateVotes = (review_id, inc_votes) => {
 exports.fetchUsers = () => {
   return db.query(`SELECT * FROM users;`).then((results) => results.rows);
 };
+
+exports.removeComment = (comment_id) => {
+  return checkExists("comments", "comment_id", comment_id).then(() => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*;`, [
+      comment_id,
+    ]);
+  });
+};
