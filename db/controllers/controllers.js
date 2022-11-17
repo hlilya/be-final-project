@@ -9,6 +9,8 @@ const {
   removeComment,
 } = require("../models/models.js");
 
+const endpoints = require("../../endpoints.json");
+
 exports.getCategories = (req, res, next) => {
   fetchCategories()
     .then((categories) => res.status(200).send({ categories }))
@@ -68,6 +70,8 @@ exports.getUsers = (req, res, next) => {
     .catch((err) => next(err));
 };
 
+exports.getAll = (req, res, next) => {
+  res.status(200).send({ endpoints });
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   removeComment(comment_id).then(() => {

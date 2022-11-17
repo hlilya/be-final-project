@@ -4,6 +4,8 @@ const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 
+const endpoints_json = require("../endpoints.json");
+
 afterAll(() => {
   return db.end();
 });
@@ -546,6 +548,16 @@ describe("8. GET /api/reviews/:review_id (comment count)", () => {
       });
   });
 });
+
+describe("9. GET/api", () => {
+  test("status 200, JSON describing all endpoints of the API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const { endpoints } = body;
+        expect(endpoints).toBeInstanceOf(Object);
+        expect(endpoints).toEqual(endpoints_json);
 
 describe("9. DELETE /api/comments/:comment_id", () => {
   test("status: 204, no content ", () => {
