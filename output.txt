@@ -1,5 +1,0 @@
-You are now connected to database "nc_games_test" as user "lilyha".
- owner | title | review_id | category | review_img_url | created_at | votes | designer | comment_count 
--------+-------+-----------+----------+----------------+------------+-------+----------+---------------
-(0 rows)
-

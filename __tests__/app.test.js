@@ -83,6 +83,7 @@ describe("3. GET /api/reviews/:review_id", () => {
         );
       });
   });
+
   test("status:404, msg: no review found with that id ", () => {
     return request(app)
       .get("/api/reviews/1000")
@@ -99,111 +100,54 @@ describe("3. GET /api/reviews/:review_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("status: 400, not enough info on the post request", () => {
-    const comment = { body: "could be better" };
+});
+
+describe("4. GET /api/reviews/:review_id/comments", () => {
+  test("status: 200, responds with an array of comments", () => {
     return request(app)
-      .post("/api/reviews/3/comments")
-      .send(comment)
-      .expect(400)
+      .get("/api/reviews/3/comments")
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(3);
+        expect(comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 3,
+            })
+          );
+        });
+      });
+  });
+  test("status: 404, msg:Resource not found when invalid review_id", () => {
+    return request(app)
+      .get("/api/reviews/1000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
       });
   });
 
-  describe("4. GET /api/reviews/:review_id/comments", () => {
-    test("status: 200, responds with an array of comments", () => {
-      return request(app)
-        .get("/api/reviews/3/comments")
-        .expect(200)
-        .then(({ body }) => {
-          const { comments } = body;
-          expect(comments).toBeInstanceOf(Array);
-          expect(comments).toHaveLength(3);
-          expect(comments).toBeSortedBy("created_at", {
-            descending: true,
-          });
-          comments.forEach((comment) => {
-            expect(comment).toEqual(
-              expect.objectContaining({
-                comment_id: expect.any(Number),
-                votes: expect.any(Number),
-                created_at: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                review_id: 3,
-              })
-            );
-          });
-        });
-    });
-    test("status: 404, msg:Resource not found when invalid review_id", () => {
-      return request(app)
-        .get("/api/reviews/1000/comments")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Resource not found");
-        });
-    });
-
-    test("status: 200, empty array when valid review_id but no comments", () => {
-      return request(app)
-        .get("/api/reviews/5/comments")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comments).toEqual([]);
-        });
-    });
-  });
-
-  describe("5. POST /api/reviews/:review_id/comments", () => {
-    test("status: 200, returns object with posted comment ", () => {
-      const comment = { username: "dav3rid", body: "could be better" };
-      return request(app)
-        .post("/api/reviews/3/comments")
-        .send(comment)
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.comment).toMatchObject({
-            comment_id: 7,
-            votes: 0,
-            created_at: expect.any(String),
-            author: comment.username,
-            body: comment.body,
-            review_id: 3,
-          });
-        });
-    });
-    test("status: 404, msg: resource not found - non-existent review_id", () => {
-      const comment = { username: "dav3rid", body: "could be better" };
-      return request(app)
-        .post("/api/reviews/10000/comments")
-        .send(comment)
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Resource not found");
-        });
-    });
-    test("status: 404, non-existent user", () => {
-      const comment = { username: "hlily", body: "could be better" };
-      return request(app)
-        .post("/api/reviews/3/comments")
-        .send(comment)
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Resource not found");
-        });
-    });
-
-    test("status: 400, invalid review id", () => {
-      const comment = { username: "hlily", body: "could be better" };
-      return request(app)
-        .post("/api/reviews/not-a-review/comments")
-        .send(comment);
-    });
+  test("status: 200, empty array when valid review_id but no comments", () => {
+    return request(app)
+      .get("/api/reviews/5/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
   });
 });
 
-describe("4. POST /api/reviews/:review_id/comments", () => {
+describe("5. POST /api/reviews/:review_id/comments", () => {
   test("status: 200, returns object with posted comment ", () => {
     const comment = { username: "dav3rid", body: "could be better" };
     return request(app)
@@ -221,6 +165,7 @@ describe("4. POST /api/reviews/:review_id/comments", () => {
         });
       });
   });
+
   test("status: 404, msg: resource not found - non-existent review_id", () => {
     const comment = { username: "dav3rid", body: "could be better" };
     return request(app)
@@ -248,9 +193,20 @@ describe("4. POST /api/reviews/:review_id/comments", () => {
       .post("/api/reviews/not-a-review/comments")
       .send(comment);
   });
+
+  test("status: 400, not enough info on the post request", () => {
+    const comment = { body: "could be better" };
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
-describe("5. PATCH /api/reviews/:review_id", () => {
+describe("6. PATCH /api/reviews/:review_id", () => {
   test("status: 202, responds with updated review (increase)", () => {
     const increaseVotes = {
       inc_votes: 100,
@@ -385,7 +341,7 @@ describe("5. PATCH /api/reviews/:review_id", () => {
   });
 });
 
-describe("6. GET /api/users", () => {
+describe("7. GET /api/users", () => {
   test("status: 200, responds with an array of objects that contain username, name, avatar_url", () => {
     return request(app)
       .get("/api/users")
@@ -405,7 +361,7 @@ describe("6. GET /api/users", () => {
   });
 });
 
-describe("7. GET /api/reviews (queries)", () => {
+describe("8. GET /api/reviews (queries)", () => {
   test("status:200, responds with array of reviews in the indicated category (query)", () => {
     return request(app)
       .get("/api/reviews?category=dexterity")
@@ -502,7 +458,7 @@ describe("7. GET /api/reviews (queries)", () => {
   });
 });
 
-describe("8. GET /api/reviews/:review_id (comment count)", () => {
+describe("9. GET /api/reviews/:review_id (comment count)", () => {
   test("status:200, responds with a review object each with correct properties - including comment count", () => {
     return request(app)
       .get("/api/reviews/3")
@@ -549,7 +505,7 @@ describe("8. GET /api/reviews/:review_id (comment count)", () => {
   });
 });
 
-describe("9. GET/api", () => {
+describe("10. GET/api", () => {
   test("status 200, JSON describing all endpoints of the API", () => {
     return request(app)
       .get("/api")
@@ -560,28 +516,28 @@ describe("9. GET/api", () => {
         expect(endpoints).toEqual(endpoints_json);
       });
   });
+});
 
-  describe("9. DELETE /api/comments/:comment_id", () => {
-    test("status: 204, no content ", () => {
-      return request(app).delete("/api/comments/1").expect(204);
-    });
+describe("11. DELETE /api/comments/:comment_id", () => {
+  test("status: 204, no content ", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
 
-    test("status: 404, comment_id valid but non-existent", () => {
-      return request(app)
-        .delete("/api/comments/100000")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Resource not found");
-        });
-    });
+  test("status: 404, comment_id valid but non-existent", () => {
+    return request(app)
+      .delete("/api/comments/100000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
 
-    test("status: 400, comment_id not valid", () => {
-      return request(app)
-        .delete("/api/comments/not-an-id")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Bad request");
-        });
-    });
+  test("status: 400, comment_id not valid", () => {
+    return request(app)
+      .delete("/api/comments/not-an-id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
   });
 });
