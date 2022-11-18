@@ -541,3 +541,28 @@ describe("11. DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("12. GET /api/users/username", () => {
+  test("status: 200, returns obj with selected user from username", () => {
+    return request(app)
+      .get("/api/users/philippaclaire9")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+          username: "philippaclaire9",
+          name: "philippa",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        });
+      });
+  });
+  test("status: 404, user not found (valid but non-esistent)", () => {
+    return request(app)
+      .get("/api/users/hlilya")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found");
+      });
+  });
+});
