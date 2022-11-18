@@ -169,3 +169,11 @@ exports.removeComment = (comment_id) => {
     ]);
   });
 };
+
+exports.fetchUsersByUsername = (username) => {
+  return checkExists("users", "username", username).then(() => {
+    return db
+      .query(`SELECT * FROM users WHERE username = $1;`, [username])
+      .then((results) => results.rows[0]);
+  });
+};
