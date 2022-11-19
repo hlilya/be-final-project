@@ -8,6 +8,7 @@ const {
   fetchUsers,
   removeComment,
   fetchUsersByUsername,
+  updateVotesByCommentId,
 } = require("../models/models.js");
 
 const endpoints = require("../../endpoints.json");
@@ -98,3 +99,9 @@ exports.getUsersByUsername = (req, res, next) => {
     .then((user) => res.status(200).send({user}))
     .catch((err) => next(err));
 };
+
+exports.patchCommentVotes = (req, res, next) => {
+  const {comment_id} = req.params
+  const {inc_votes} = req.body
+  updateVotesByCommentId(comment_id, inc_votes);
+}

@@ -566,3 +566,22 @@ describe("12. GET /api/users/username", () => {
       });
   });
 });
+
+describe("13. PATCH /api/comments/:comment_id", () => {
+  const votes = { inc_votes: 100 };
+  return request(app)
+    .patch("/api/comments/3")
+    .send(votes)
+    .expect(202)
+    .then(({ body }) => {
+      const { comment } = body;
+      expect(comment).toMatchObject({
+        comment_id: 3,
+        body: "I didn't know dogs could play games",
+        votes: 110,
+        author: "philippaclaire9",
+        review_id: 3,
+        created_at: new Date(1610964588110),
+      });
+    });
+});
