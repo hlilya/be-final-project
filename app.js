@@ -16,5 +16,6 @@ app.get("/api", getAll);
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);
 app.use(handleServerErrors);
+// error handlers
 
 module.exports = app;
